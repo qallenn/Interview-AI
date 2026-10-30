@@ -141,6 +141,17 @@ func (s *Store) UserByEmail(email string) (*User, error) {
 	return nil, errNotFound
 }
 
+func (s *Store) SetPassword(id, salt, hash string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	u, ok := s.d.Users[id]
+	if !ok {
+		return errNotFound
+	}
+	u.Salt, u.PassHash = salt, hash
+	return s.flush()
+}
+
 func (s *Store) UpdateUserName(id, name string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

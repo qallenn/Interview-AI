@@ -11,3 +11,9 @@ services:
       # Optional: turns on Claude scoring. Render asks for the value when you create the service.
       - key: ANTHROPIC_API_KEY
         sync: false
+      # Optional: a login that is recreated on every start. Set the values in the Render dashboard,
+      # never in this file - the repository is public.
+      - key: DEMO_EMAIL
+        sync: false
+      - key: DEMO_PASSWORD
+        sync: false

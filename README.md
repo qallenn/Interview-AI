@@ -40,7 +40,7 @@ GitHub Pages can only host static files, so it cannot run this Go server. Use [R
 
 Every push to `master` redeploys automatically.
 
-On the free plan the app sleeps after 15 minutes without visitors (the next visit takes about a minute to wake it), and **files are wiped on every restart or deploy**, so accounts and interviews in `data/db.json` do not last. For lasting data, use a paid plan with a [persistent disk](https://render.com/docs/disks) mounted at `/var/data` and set `DATA_FILE=/var/data/db.json`.
+On the free plan the app sleeps after 15 minutes without visitors (the next visit takes about a minute to wake it), and **files are wiped on every restart or deploy**, so accounts and interviews in `data/db.json` do not last. To keep one shared login working anyway, set `DEMO_EMAIL` and `DEMO_PASSWORD` in the service's **Environment** tab. For lasting data, use a paid plan with a [persistent disk](https://render.com/docs/disks) mounted at `/var/data` and set `DATA_FILE=/var/data/db.json`.
 
 ## Environment variables
 
@@ -52,6 +52,8 @@ On the free plan the app sleeps after 15 minutes without visitors (the next visi
 | `ANTHROPIC_API_KEY` | — | Turns on Claude scoring |
 | `CLAUDE_MODEL` | `claude-opus-5-5` | Claude model to use |
 | `OFFLINE` | — | Set to anything to ignore the API key |
+| `DEMO_EMAIL`, `DEMO_PASSWORD` | — | A login created (or its password reset) on every start, so a shared demo account survives restarts |
+| `DEMO_NAME` | `Demo Student` | Name of the demo account |
 
 ## Layout
 

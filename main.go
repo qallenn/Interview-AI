@@ -36,6 +36,9 @@ func main() {
 		log.Fatal(err)
 	}
 	s := &server{store: store, ai: NewEvaluator()}
+	if err := ensureDemoUser(store); err != nil {
+		log.Fatal(err)
+	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /api/auth/register", s.register)
@@ -78,6 +81,23 @@ func main() {
 	}
 	log.Printf("InterviewAI listening on http://localhost%s — %s", addr, mode)
 	log.Fatal(http.ListenAndServe(addr, logRequests(mux)))
+}
+
+// ensureDemoUser creates the account from DEMO_EMAIL and DEMO_PASSWORD on
+// every start, so a shared demo login survives hosts that wipe the data file.
+// If the account already exists its password is reset to DEMO_PASSWORD.
+func ensureDemoUser(store *Store) error {
+	email, pw := strings.TrimSpace(os.Getenv("DEMO_EMAIL")), os.Getenv("DEMO_PASSWORD")
+	if email == "" || pw == "" {
+		return nil
+	}
+	salt := newID(16)
+	hash := hashPassword(pw, salt)
+	if u, err := store.UserByEmail(email); err == nil {
+		return store.SetPassword(u.ID, salt, hash)
+	}
+	log.Printf("created demo account %s", email)
+	return store.CreateUser(&User{Name: envOr("DEMO_NAME", "Demo Student"), Email: email, Salt: salt, PassHash: hash})
 }
 
 func envOr(k, def string) string {
