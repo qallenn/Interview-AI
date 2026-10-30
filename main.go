@@ -29,7 +29,8 @@ type server struct {
 }
 
 func main() {
-	addr := envOr("ADDR", ":8080")
+	// Hosts such as Render pass the port to listen on in PORT.
+	addr := envOr("ADDR", ":"+envOr("PORT", "8080"))
 	store, err := OpenStore(envOr("DATA_FILE", "data/db.json"))
 	if err != nil {
 		log.Fatal(err)
@@ -167,7 +168,9 @@ func (s *server) startSession(w http.ResponseWriter, r *http.Request, u *User) {
 	}
 	http.SetCookie(w, &http.Cookie{
 		Name: cookieName, Value: tok, Path: "/", HttpOnly: true,
-		SameSite: http.SameSiteLaxMode, Secure: r.TLS != nil, MaxAge: 60 * 60 * 24 * 30,
+		SameSite: http.SameSiteLaxMode, MaxAge: 60 * 60 * 24 * 30,
+		// Behind a hosting proxy TLS ends before our server, so check the forwarded scheme too.
+		Secure: r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https",
 	})
 	writeJSON(w, http.StatusOK, publicUser(u))
 }

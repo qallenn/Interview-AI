@@ -1,0 +1,13 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: interviewai
+    runtime: go
+    plan: free
+    buildCommand: go build -o app .
+    startCommand: ./app
+    healthCheckPath: /api/sample-report
+    envVars:
+      # Optional: turns on Claude scoring. Render asks for the value when you create the service.
+      - key: ANTHROPIC_API_KEY
+        sync: false

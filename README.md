@@ -29,11 +29,25 @@ go run .
 
 The `web/` folder is embedded into the binary, so **restart the app after you edit HTML, CSS or JS**.
 
+## Deploy to Render
+
+GitHub Pages can only host static files, so it cannot run this Go server. Use [Render](https://render.com) instead:
+
+1. Sign in to Render with GitHub.
+2. Click **New → Blueprint** and pick this repository. Render reads `render.yaml`.
+3. Enter an `ANTHROPIC_API_KEY` if you want Claude scoring, or leave it empty for offline scoring.
+4. Click **Apply**. After the build, the site is live at `https://interviewai-xxxx.onrender.com`.
+
+Every push to `master` redeploys automatically.
+
+On the free plan the app sleeps after 15 minutes without visitors (the next visit takes about a minute to wake it), and **files are wiped on every restart or deploy**, so accounts and interviews in `data/db.json` do not last. For lasting data, use a paid plan with a [persistent disk](https://render.com/docs/disks) mounted at `/var/data` and set `DATA_FILE=/var/data/db.json`.
+
 ## Environment variables
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `ADDR` | `:8080` | Address to listen on |
+| `PORT` | `8080` | Port to listen on (set by Render) |
+| `ADDR` | `:$PORT` | Full listen address; overrides `PORT` |
 | `DATA_FILE` | `data/db.json` | JSON database file |
 | `ANTHROPIC_API_KEY` | — | Turns on Claude scoring |
 | `CLAUDE_MODEL` | `claude-opus-5-5` | Claude model to use |
